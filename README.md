@@ -2,6 +2,8 @@
 
 Mirror a [lerobot](https://github.com/huggingface/lerobot) `lerobot-teleoperate` leader/follower session's live joint state into an Isaac Sim UDP receiver, in real time — while leaving the real-arm control behavior untouched.
 
+https://github.com/user-attachments/assets/ab85519c-0284-4ccd-aac0-dd4f9524fce2
+
 This package reuses `lerobot-teleoperate`'s exact CLI/config surface and action-processing pipeline. It adds one thing: each loop iteration, it takes the follower's `get_observation()` (already read once per iteration by the stock teleop loop — no extra CAN bus traffic) and forwards it as UDP JSON to an Isaac Sim receiver.
 
 The repo has two independent halves that run in two different Python runtimes:

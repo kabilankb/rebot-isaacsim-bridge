@@ -2,8 +2,6 @@
 
 Mirror a [lerobot](https://github.com/huggingface/lerobot) `lerobot-teleoperate` leader/follower session's live joint state into an Isaac Sim UDP receiver, in real time — while leaving the real-arm control behavior untouched.
 
-让 [lerobot](https://github.com/huggingface/lerobot) `lerobot-teleoperate`（leader -> follower 遥操作）驱动真实机械臂的同时，把 follower 的实时关节角镜像到 Isaac Sim，不改变真实机械臂的控制行为。
-
 This package reuses `lerobot-teleoperate`'s exact CLI/config surface and action-processing pipeline. It adds one thing: each loop iteration, it takes the follower's `get_observation()` (already read once per iteration by the stock teleop loop — no extra CAN bus traffic) and forwards it as UDP JSON to an Isaac Sim receiver.
 
 The repo has two independent halves that run in two different Python runtimes:
@@ -37,7 +35,17 @@ This pulls in `torch` and the rest of `lerobot`'s dependency tree, so the first 
 
 ## Usage
 
-Two terminals. Start the Isaac Sim receiver first, then this bridge with the exact same flags you'd pass to `lerobot-teleoperate`.
+**Terminal 0 — optional, first-time hardware check** (verify the motors respond before bringing up the full pipeline; see "Optional: motorbridge-studio live monitoring & debugging" below for details):
+
+```bash
+motorbridge-gateway -- --bind 127.0.0.1:9002 --vendor damiao --transport dm-serial \
+    --serial-port /dev/ttyACM0 --serial-baud 921600 \
+    --model 4340P --dt-ms 20
+```
+
+Open <https://motorbridge.github.io/motorbridge-studio/>, connect to `ws://127.0.0.1:9002`, and confirm the motors on `/dev/ttyACM0` show up and respond. **Stop this (Ctrl+C) before moving on to Terminal 2** — it holds the same serial port `lerobot-teleop-sim-bridge` needs, and the two can't run at once.
+
+Two terminals for the actual pipeline. Start the Isaac Sim receiver first, then this bridge with the exact same flags you'd pass to `lerobot-teleoperate`.
 
 **Terminal 1 — Isaac Sim receiver** (Isaac Sim's own `python.sh`, not this package's venv):
 

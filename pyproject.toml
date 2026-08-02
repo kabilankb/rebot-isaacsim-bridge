@@ -1,0 +1,45 @@
+[project]
+name = "rebot-isaacsim-bridge"
+version = "0.1.0"
+description = "Mirror a lerobot-teleoperate leader/follower session's live joint state into an Isaac Sim UDP receiver, in real time."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = [
+    # 固定到本项目验证过的 Seeed fork 提交（而非泛用的 PyPI lerobot==0.6.0），
+    # 因为本桥接依赖的内部 API（parser.wrap / register_third_party_plugins /
+    # make_default_processors 等）在该提交上验证可用；未固定版本可能不兼容。
+    # Pinned to the exact Seeed-fork commit this bridge was verified against
+    # (rather than the generic PyPI lerobot==0.6.0), because the internal
+    # APIs this bridge relies on (parser.wrap / register_third_party_plugins /
+    # make_default_processors, etc.) are confirmed working at this commit;
+    # an unpinned version may not be API-compatible.
+    "lerobot @ git+https://github.com/Seeed-Projects/lerobot.git@0f392484458cb5ebca0310c0c4c47390a31c80ed",
+]
+
+[project.optional-dependencies]
+# reBotArm B601 follower + 102 leader 硬件插件（可选，按你的硬件选装）。
+# reBotArm B601 follower + 102 leader hardware plugins (optional, install
+# the extra matching your hardware).
+seeed-b601 = [
+    "lerobot_robot_seeed_b601==1.0.0",
+    "lerobot_teleoperator_rebot_arm_102==1.0.0",
+]
+
+[project.scripts]
+lerobot-teleop-sim-bridge = "rebot_isaacsim_bridge.bridge:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rebot_isaacsim_bridge"]
+
+[tool.hatch.metadata]
+# lerobot 依赖是 git+https 直接引用（固定到具体提交），hatchling 默认禁止
+# 这类"直接引用"依赖，需显式放开。
+# The lerobot dependency is a direct git+https reference (pinned to a
+# specific commit); hatchling disallows such "direct references" by
+# default, so this must be explicitly enabled.
+allow-direct-references = true

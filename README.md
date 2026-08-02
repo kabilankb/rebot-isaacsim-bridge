@@ -53,7 +53,7 @@ Two terminals for the actual pipeline. Start the Isaac Sim receiver first, then 
 
 ```bash
 cd ~/Documents/rebot/rebot-isaacsim-bridge/isaacsim
-export ISAACSIM_ROOT=/path/to/your/IsaacSim/_build/linux-x86_64/release
+export ISAACSIM_ROOT=/path/to/your/IsaacSim/_build/linux-x86_64/release   # linux-aarch64 on ARM hosts (e.g. DGX Spark/GH200) — check `uname -m`
 export REBOT_ASSET_ROOT=~/Documents/rebot/reBot-Isaacsim   # any dir containing usd/RS-rebot-dev-arm/
 ./run_isaacsim_receiver.sh
 ```
@@ -164,7 +164,7 @@ Then open <https://motorbridge.github.io/motorbridge-studio/> and connect to `ws
 | `TypeError: must be called with a dataclass type or instance` on startup | Something added `from __future__ import annotations` to `bridge.py`, which is incompatible with lerobot's `parser.wrap()` runtime type introspection | Do not add that import to `bridge.py` |
 | `Missing required field(s) teleop, robot` | `--robot.type=...` / `--teleop.type=...` not provided | Supply the required flags, same as `lerobot-teleoperate` |
 | `[error] REBOT_ASSET_ROOT is not set` | The receiver couldn't find the robot USD asset | `export REBOT_ASSET_ROOT=/path/to/reBot-Isaacsim` (or any dir containing `usd/RS-rebot-dev-arm/`) before launching |
-| `[error] Isaac Sim python.sh not found` | `ISAACSIM_ROOT` isn't set or doesn't point at a real Isaac Sim install | `export ISAACSIM_ROOT=/path/to/IsaacSim/_build/linux-x86_64/release` |
+| `[error] Isaac Sim python.sh not found` | `ISAACSIM_ROOT` isn't set or doesn't point at a real Isaac Sim install | `export ISAACSIM_ROOT=/path/to/IsaacSim/_build/<arch>/release`, where `<arch>` is `linux-x86_64` or `linux-aarch64` — match it to `uname -m` (`x86_64` vs `aarch64`), not just copy the example verbatim |
 
 ## License
 
